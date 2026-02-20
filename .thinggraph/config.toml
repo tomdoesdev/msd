@@ -1,0 +1,17 @@
+[project]
+  name = ""
+  default_template = "task"
+  default_workflow = "default"
+
+[user]
+  name = "tom"
+
+[display]
+  date_format = "relative"
+  color = true
+
+[labels]
+  strict = false
+
+[id]
+  length = 6
