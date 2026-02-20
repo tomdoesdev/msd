@@ -1,0 +1,20 @@
+[template]
+  name = "task"
+  description = "A todo task item"
+  workflow = "default"
+
+[[fields]]
+  name = "title"
+  type = "string"
+  required = true
+
+[[fields]]
+  name = "description"
+  type = "text"
+  required = false
+
+[[fields]]
+  name = "exercise"
+  type = "number"
+  default = 1
+  required = true

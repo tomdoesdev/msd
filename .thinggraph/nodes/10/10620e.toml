@@ -1,0 +1,41 @@
+[system]
+id = "10620e"
+template = "task"
+state = "done"
+created_at = "2026-02-20T03:45:22Z"
+updated_at = "2026-02-20T05:17:05Z"
+created_by = "tom"
+
+[fields]
+description = "Do thorough code review making sure to pay special attention to problems with unintended sideeffects, code smells etc"
+exercise = "1"
+title = "Perform code review"
+
+[labels]
+tags = []
+
+[edges]
+blocked-by = ["6f6ab2", "b77f16"]
+
+[history]
+
+[[history.entries]]
+timestamp = "2026-02-20T03:45:22Z"
+from = ""
+to = "draft"
+by = "tom"
+note = "Node created"
+
+[[history.entries]]
+timestamp = "2026-02-20T03:47:52Z"
+from = "draft"
+to = "active"
+by = "tom"
+note = "Transition: activate"
+
+[[history.entries]]
+timestamp = "2026-02-20T05:17:05Z"
+from = "active"
+to = "done"
+by = "tom"
+note = "Transition: done"

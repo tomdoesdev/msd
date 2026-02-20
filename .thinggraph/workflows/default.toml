@@ -1,0 +1,61 @@
+[workflow]
+  name = "default"
+  description = "Standard task lifecycle"
+  initial_state = "draft"
+  terminal_states = ["done", "archived"]
+
+[[states]]
+  name = "draft"
+  description = "Task has been defined but is not active yet"
+
+[[states]]
+  name = "active"
+  description = "Task is active in the graph"
+
+[[states]]
+  name = "done"
+  description = "Task is complete and done"
+
+[[states]]
+  name = "archived"
+  description = "Task has been archived"
+
+[[transitions]]
+  from = "draft"
+  to = "active"
+  name = "activate"
+  [transitions.conditions]
+    requires_no_blockers = false
+    requires_all_subnodes_terminal = false
+
+[[transitions]]
+  from = "draft"
+  to = "archived"
+  name = "archive"
+  [transitions.conditions]
+    requires_no_blockers = false
+    requires_all_subnodes_terminal = false
+
+[[transitions]]
+  from = "active"
+  to = "draft"
+  name = "pause"
+  [transitions.conditions]
+    requires_no_blockers = false
+    requires_all_subnodes_terminal = false
+
+[[transitions]]
+  from = "active"
+  to = "done"
+  name = "done"
+  [transitions.conditions]
+    requires_no_blockers = true
+    requires_all_subnodes_terminal = false
+
+[[transitions]]
+  from = "done"
+  to = "active"
+  name = "iterate"
+  [transitions.conditions]
+    requires_no_blockers = false
+    requires_all_subnodes_terminal = false

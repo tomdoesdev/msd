@@ -1,13 +1,45 @@
-namespace Review 
-{
+/**
+ * REVIEW:
+ * This file should have a '.ts' extension, not '.txt'.
+ **/
+namespace Review {
+    /**
+   * REVIEW:
+   * Could this class be moved into its own file and renamed to `Person`?
+   * Keeping one top-level type per file and using singular entity names usually
+   * improves discoverability and keeps naming consistent with domain language.
+   */
     export class People {
+        /** REVIEW:
+         * This constant uses a hard-coded age calculation (`15 * 365 * ...`), which
+         * is a magic number and easy to misread. Consider extracting named constants
+         * (for example `DEFAULT_AGE_YEARS`) or centralizing date calculations.
+         *
+         * Also, the name `Under16` does not match the `15` year offset, and because
+         * this is a shared `Date` instance, accidental mutation could affect all
+         * defaulted records.
+         */
         private static Under16: Date = new Date(Date.now() - (15 * 365 * 24 * 60 * 60 * 1000));
         public Name: string;
         public DOB: Date;
 
+        /**
+            * REVIEW:
+            * Is there a reason for specifying multiple constructor signatures?
+            * My advice would be to narrow it down to just `constructor(name: string, dob?: Date)` 
+            * because TypeScript constructor overloads are useful when the types of parameters 
+            * change significantly between signatures e.g., constructor(name: string) vs constructor(config: PersonConfig).
+            * This isnt the case here.
+            */
         constructor(name: string);
         constructor(name: string, dob: Date);
         constructor(name: string, dob?: Date) {
+            /**
+             * REVIEW:
+             * There may be a subtle bug here due to using strict equals (===)
+             * if dob is null should the same logic used for undefined apply?
+             * could we change the condition to 'if(!dob){...'?
+            */
             if (dob === undefined) {
                 this.Name = name;
                 this.DOB = People.Under16;
@@ -17,9 +49,18 @@ namespace Review
             }
         }
     }
-
-    export class BirthingUnit 
-    {
+    /**
+     * REVIEW:
+     * `BirthingUnit` does not communicate the class responsibility clearly.
+     *  Would `PersonRepository` or `PersonService` better describe the behavior?
+     *  Also consider seperating this into its own file for organisation.
+    */
+    export class BirthingUnit {
+        /**
+        * REVIEW:
+        * This comment appears stale and does not explain behavior or constraints.
+        * Consider removing it to reduce noise unless there is a real limit enforced.
+        */
         // MaxItemsToRetrieve
         private _people: People[];
 
@@ -27,45 +68,174 @@ namespace Review
             this._people = [];
         }
 
+        /**
+         * REVIEW:
+         * The method name suggests a read-only query, but this method mutates state
+         * by creating and storing new records on every call. Could the name reflect
+         * side effects (for example `addRandomPeople`) or could creation/query be split?
+         *
+         * Also, docstrings should use a proper multi-line documentation block, and
+         * the current parameter/return comments appear out of date (`@param j` does
+         * not match the signature). For parameter and return types, it is usually
+         * better to rely on TypeScript type information and use docs for intent and
+         * design rationale.
+         *
+         * The parameter name `i` is ambiguous; a descriptive name such as `count`
+         * or `numberToGenerate` would make call sites and intent clearer.
+         *
+         * Also, returning the backing array directly exposes mutable internal state.
+         * Consider returning a copy or a read-only view to preserve encapsulation.
+        */
+
         // GetPeoples
         // @param j
         // @returns Array<object>
-        public GetPeople(i: number): People[] 
-        {
+        public GetPeople(i: number): People[] {
+            /**
+             *  REVIEW:
+             * The loop variable naming is minor, but consistency helps readability.
+             * If `i` is the count argument, consider `index` for the loop variable.
+             *
+             * Would it be useful to validate `i` (for example negative values or very
+             * large inputs) to avoid surprising behavior or excessive allocations?
+             */
             for (let j = 0; j < i; j++) {
-                try 
-                {
+                try {
+                    /**
+                     * REVIEW:
+                     * Typo in comment (`dandon`). Consider correcting or removing this
+                     * comment because the code below is self-explanatory.
+                     */
                     // Creates a dandon Name
                     let name: string = "";
+
+                    /** REVIEW:
+                     * `random` is assigned but never used, which suggests dead code.
+                     * Is linting properly configured? This file has a 'txt' extension so maybe change it?
+                     */
                     let random = Math.random();
+
+                    /** REVIEW:
+                     * This condition is always true because `Math.random() * 1` is always in
+                     * `[0, 1)`, so `Math.floor(...)` is always `0`. As written, everyone is
+                     * named `Bob` and the `else` branch is unreachable.
+                     *
+                     * Consider a clearer boolean choice (for example `< 0.5`) to generate
+                     * both names and remove the unnecessary `* 1`.
+                     */
                     if (Math.floor(Math.random() * 1) == 0) {
                         name = "Bob";
-                    } 
-                    else { name = "Betty"; }
+                    } else {
+                        name = "Betty";
+                    }
+                    /**
+                     * REVIEW:
+                     * Date generation is hard to read and uses `356` days, which looks like
+                     * a typo for `365`. This same issue appears in `GetBobs`.
+                     *
+                     * Could we extract named constants (min/max age and milliseconds per day)
+                     * or a helper function so intent is explicit and less error-prone?
+                     */
+
                     // Adds new people to the list
-                    this._people.push(new People(name, new Date(Date.now() - (Math.floor(Math.random() * (85 - 18) + 18) * 356 * 24 * 60 * 60 * 1000))));
-                }
-                catch (e) {
+                    this._people.push(
+                        new People(
+                            name,
+                            new Date(
+                                Date.now() -
+                                Math.floor(Math.random() * (85 - 18) + 18) *
+                                356 *
+                                24 *
+                                60 *
+                                60 *
+                                1000,
+                            ),
+                        ),
+                    );
+                } catch (e) {
+                    /**
+                     * REVIEW:
+                     * This `catch` catches every error type and rethrows a generic message,
+                     * which loses original context and makes debugging harder.
+                     *
+                     * If you cant handle the error locally could we let the original error bubble?
+                     * If translation is required, include the original error as `cause` (or better yet, a custom error).
+                     * 
+                     */
+
                     // Dont think this should ever happen
                     throw new Error("Something failed in user creation");
                 }
             }
+            /**
+              * REVIEW:
+              * Is there a reason you are returning the actual underlying _person backing field?
+              * Doing so leaks the internal state. Could you return a copy instead?
+              */
             return this._people;
         }
 
+        /**
+         * REVIEW:
+         * `GetBobs` appears unused; if confirmed, removing it would reduce dead code.
+         * Also, the `olderThan30` branch seems to have a bug in the calculation of the cutoff date.
+         * You use the number '356', is that meant to be 365?
+         * 
+         * Also, you dont need to create a new Date to check the DOB. You can create the DOB cutoff
+         * once in the outer scope of the method and use it in the loop. This way you reduce the posibility 
+         * of unecessary memory use.
+         */
         private GetBobs(olderThan30: boolean): People[] {
-            return olderThan30 ? this._people.filter(x => x.Name == "Bob" && x.DOB >= new Date(Date.now() - (30 * 356 * 24 * 60 * 60 * 1000))) : this._people.filter(x => x.Name == "Bob");
+            return olderThan30
+                ? this._people.filter(
+                    (x) =>
+                        x.Name == "Bob" &&
+                        x.DOB >= new Date(Date.now() - 30 * 356 * 24 * 60 * 60 * 1000),
+                )
+                : this._people.filter((x) => x.Name == "Bob");
         }
 
-        public GetMarried(p: People, lastName: string): string 
-        {
-            if (lastName.includes("test"))
-                return p.Name;
+        public GetMarried(p: People, lastName: string): string {
+            /**
+             * REVIEW:
+             * Could you clarify the business rule for names containing `"test"`?
+             * This special case is not self-evident and may hide test-only behavior in
+             * production code paths.
+             */
+            if (lastName.includes("test")) return p.Name;
+            /**
+             * REVIEW:
+             * This condition is likely incorrect: `p.Name.length + lastName` coerces to
+             * a string before `.length` is checked. Did you mean
+             * `p.Name.length + lastName.length`?
+             */
             if ((p.Name.length + lastName).length > 255) {
+                /**
+                 * REVIEW:
+                 * The truncated value is discarded. Should this be returned or assigned so
+                 * the length limit is actually enforced?
+                 */
                 (p.Name + " " + lastName).substring(0, 255);
             }
 
             return p.Name + " " + lastName;
         }
     }
+
+    /**
+     * REVIEW REFLECTION:
+     * Most concerning smell: magic numbers in date arithmetic. Long numeric
+     * expressions like `30 * 365 * 24 * 60 * 60 * 1000` are difficult to scan and
+     * easy to mistype (for example `356` instead of `365`), which can introduce
+     * subtle defects that are hard to diagnose. They also make it more cognitively expensive to understand
+     * the code and will introduce small, subtle bugs in the business logic.
+     *
+     * Questions for the original author:
+     * 1. Are age ranges and date calculations business rules, and do we have tests
+     *    that protect those boundaries?
+     * 2. Can we centralize date math behind named constants/helpers to avoid
+     *    repeating raw time multipliers throughout the code? Do we have a thrid party datetime library that we could use?
+     * 3. What should the GetPeople method actually do? Get N number of people, or add Random people?
+     * 4. Would you like to hop on a call and discuss anything, or peer together?
+     */
 }
