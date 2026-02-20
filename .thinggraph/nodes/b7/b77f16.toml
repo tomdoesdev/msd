@@ -1,0 +1,41 @@
+[system]
+id = "b77f16"
+template = "task"
+state = "done"
+created_at = "2026-02-20T04:11:59Z"
+updated_at = "2026-02-20T04:13:20Z"
+created_by = "tom"
+
+[fields]
+description = "review the structure of the code, abstractions used etc"
+exercise = "1"
+title = "Review code structure"
+
+[labels]
+tags = []
+
+[edges]
+blocks = ["10620e"]
+
+[history]
+
+[[history.entries]]
+timestamp = "2026-02-20T04:11:59Z"
+from = ""
+to = "draft"
+by = "tom"
+note = "Node created"
+
+[[history.entries]]
+timestamp = "2026-02-20T04:13:18Z"
+from = "draft"
+to = "active"
+by = "tom"
+note = "Transition: activate"
+
+[[history.entries]]
+timestamp = "2026-02-20T04:43:20Z"
+from = "active"
+to = "done"
+by = "tom"
+note = "Transition: done"

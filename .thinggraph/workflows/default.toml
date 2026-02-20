@@ -2,7 +2,7 @@
   name = "default"
   description = "Standard task lifecycle"
   initial_state = "draft"
-  terminal_states = ["stable", "archived"]
+  terminal_states = ["done", "archived"]
 
 [[states]]
   name = "draft"
@@ -13,8 +13,8 @@
   description = "Task is active in the graph"
 
 [[states]]
-  name = "stable"
-  description = "Task is complete and stable"
+  name = "done"
+  description = "Task is complete and done"
 
 [[states]]
   name = "archived"
@@ -46,14 +46,14 @@
 
 [[transitions]]
   from = "active"
-  to = "stable"
-  name = "stabilize"
+  to = "done"
+  name = "done"
   [transitions.conditions]
     requires_no_blockers = true
     requires_all_subnodes_terminal = false
 
 [[transitions]]
-  from = "stable"
+  from = "done"
   to = "active"
   name = "iterate"
   [transitions.conditions]
